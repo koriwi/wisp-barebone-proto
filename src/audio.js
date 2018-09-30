@@ -45,13 +45,14 @@ export default class WispAudio {
             if (this.scriptNodes[client])
                 this.scriptNodes[client].disconnect();
             this.scriptNodes[client] = this.audioContext.createScriptProcessor(bufferSize, 1, 1);
-            this.scriptNodes[client].connect(this.merger, 0, index);
+            // this.scriptNodes[client].connect(this.merger, 0, index)
+            this.scriptNodes[client].connect(this.audioContext.destination);
             this.scriptNodes[client].onaudioprocess = (aPE) => {
                 const outputBuffer = aPE.outputBuffer;
                 for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
                     var outputData = outputBuffer.getChannelData(channel);
                     // Loop through the x number of samples
-                    if (this.chunks[client].data.length > 1) {
+                    if (this.chunks[client].data.length > 3) {
                         const chunk = this.chunks[client].data.shift();
                         for (var sample = 0; sample < chunk.length; sample++) {
                             outputData[sample] = chunk[sample];
@@ -109,7 +110,8 @@ export default class WispAudio {
                     case 'audio':
                         const audio = JSON.parse(parsed.payload);
                         const f32array = new Float32Array(Buffer.from(audio.mic.data).buffer);
-                        console.log(parsed.id);
+                        while (this.chunks[parsed.id].data.length > 15)
+                            this.chunks[parsed.id].data.shift();
                         this.chunks[parsed.id].data.push(f32array);
                         break;
                     default: break;
