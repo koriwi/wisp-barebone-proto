@@ -15,7 +15,7 @@ class App extends Component {
 
   setupAudio() {
     if (!this.state.audio) navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-      this.wisp = new Wisp('wss://f785be67.ngrok.io', new AudioContext(), stream, (clients) => this.setState({ clients }))
+      this.wisp = new Wisp('wss://wisp-barebone-ws.herokuapp.com', new AudioContext(), stream, (clients) => this.setState({ clients }))
       this.setState({ audio: true })
     })
   }
