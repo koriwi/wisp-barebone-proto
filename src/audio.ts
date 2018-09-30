@@ -76,7 +76,7 @@ export default class WispAudio {
     clients.forEach((client, index) => {
       if(this.scriptNodes[client]) this.scriptNodes[client].disconnect()
       this.scriptNodes[client] = this.audioContext.createScriptProcessor(bufferSize, 1, 1)
-      this.scriptNodes[client].connect(this.merger, index, 0)
+      this.scriptNodes[client].connect(this.merger, 0, index)
       // this.scriptNodes[client].connect(this.audioContext.destination)
       this.scriptNodes[client].onaudioprocess = (aPE: AudioProcessingEvent) => {
         const outputBuffer = aPE.outputBuffer
@@ -145,7 +145,10 @@ export default class WispAudio {
           case 'audio':
             const audio = JSON.parse(parsed.payload)
             const f32array = new Float32Array(Buffer.from(audio.mic.data).buffer)
-            while (this.chunks[parsed.id!].data.length > 15) this.chunks[parsed.id!].data.shift()
+            while (this.chunks[parsed.id!].data.length > 15) {
+              console.log('preventing too big buffer')
+              this.chunks[parsed.id!].data.shift()
+            }
             this.chunks[parsed.id!].data.push(f32array)
             break;
           default: break;
