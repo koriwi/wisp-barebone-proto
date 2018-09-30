@@ -76,8 +76,8 @@ export default class WispAudio {
     clients.forEach((client, index) => {
       if(this.scriptNodes[client]) this.scriptNodes[client].disconnect()
       this.scriptNodes[client] = this.audioContext.createScriptProcessor(bufferSize, 1, 1)
-      // this.scriptNodes[client].connect(this.merger, 0, index)
-      this.scriptNodes[client].connect(this.audioContext.destination)
+      this.scriptNodes[client].connect(this.merger, index, 0)
+      // this.scriptNodes[client].connect(this.audioContext.destination)
       this.scriptNodes[client].onaudioprocess = (aPE: AudioProcessingEvent) => {
         const outputBuffer = aPE.outputBuffer
         for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
